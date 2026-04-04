@@ -14,29 +14,21 @@ music.volume = 0.3;
 
 const jumpSound = new Audio("audio/jump.wav");
 
-// ===== CANVAS (MOBILE FIX) =====
+// ===== CANVAS =====
 const cvs = document.getElementById("gameCanvas");
 const ctx = cvs.getContext("2d");
 
-// 🔥 ОПТИМИЗАЦИЯ
-const dpr = Math.min(window.devicePixelRatio || 1, 2);
+cvs.width = window.innerWidth;
+cvs.height = window.innerHeight;
 
-cvs.width = window.innerWidth * dpr;
-cvs.height = window.innerHeight * dpr;
-
-cvs.style.width = window.innerWidth + "px";
-cvs.style.height = window.innerHeight + "px";
-
-ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-// ===== BACKGROUND CACHE (ВАЖНО) =====
+// ===== 🔥 КЕШ ФОНА (главный фикс лагов)
 const bgCanvas = document.createElement("canvas");
 const bgCtx = bgCanvas.getContext("2d");
 
 bgImg.onload = () => {
     bgCanvas.width = cvs.width;
     bgCanvas.height = cvs.height;
-    bgCtx.drawImage(bgImg, 0, 0, bgCanvas.width, bgCanvas.height);
+    bgCtx.drawImage(bgImg, 0, 0, cvs.width, cvs.height);
 };
 
 // ===== GAME STATE =====
@@ -61,13 +53,12 @@ function startGame() {
 }
 
 // ===== INPUT =====
-cvs.addEventListener("touchstart", tap);
 cvs.addEventListener("click", tap);
+cvs.addEventListener("touchstart", tap);
 
 function tap() {
     if (state.current === state.game) {
         bird.flap();
-
         jumpSound.currentTime = 0;
         jumpSound.play();
     }
@@ -115,16 +106,17 @@ const bird = {
     }
 };
 
-// ===== PIPES (FIXED) =====
+// ===== PIPES =====
 const pipes = {
     list: [],
-    width: 90,
-    gap: 200,
+    width: 60,
+    gap: 180,
     speed: 2,
 
     update() {
         if (state.current !== state.game) return;
 
+        // 🔥 чуть реже спавн (меньше лагов)
         if (frames % 110 === 0) {
             this.list.push({
                 x: cvs.width,
@@ -166,28 +158,28 @@ const pipes = {
         if (!pipeImg.complete) return;
 
         this.list.forEach(p => {
-            const pipeHeight = pipeImg.height;
-            const pipeWidth = pipeImg.width;
-
-            const scaleX = this.width / pipeWidth;
-            const drawHeight = pipeHeight * scaleX;
-
-            // верх
             ctx.drawImage(
                 pipeImg,
+                0,
+                0,
+                pipeImg.width,
+                pipeImg.height,
                 p.x,
-                p.top - drawHeight,
+                p.top - pipeImg.height,
                 this.width,
-                drawHeight
+                pipeImg.height
             );
 
-            // низ
             ctx.drawImage(
                 pipeImg,
+                0,
+                0,
+                pipeImg.width,
+                pipeImg.height,
                 p.x,
                 p.top + this.gap,
                 this.width,
-                drawHeight
+                pipeImg.height
             );
         });
     },
@@ -218,26 +210,29 @@ function update() {
 
 // ===== DRAW =====
 function draw() {
-    // 🔥 быстрый фон
+    // 🔥 используем кеш вместо drawImage каждый кадр
     if (bgCanvas.width) {
         ctx.drawImage(bgCanvas, 0, 0);
+    } else {
+        ctx.fillStyle = "#111";
+        ctx.fillRect(0, 0, cvs.width, cvs.height);
     }
 
     pipes.draw();
     bird.draw();
 
     ctx.fillStyle = "#fff";
-    ctx.font = "20px Arial";
+    ctx.font = "24px Arial";
     ctx.fillText("Score: " + score, 20, 40);
 }
 
-// ===== FPS LIMIT (ВАЖНО) =====
+// ===== 🔥 FPS LIMIT =====
 let lastTime = 0;
 
 function loop(time = 0) {
     const delta = time - lastTime;
 
-    if (delta > 16) {
+    if (delta > 16) { // ~60 FPS стабильно
         update();
         draw();
         lastTime = time;

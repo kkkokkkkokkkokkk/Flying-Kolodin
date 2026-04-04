@@ -8,7 +8,7 @@ cvs.height = window.innerHeight;
 // GAME VARS
 let frames = 0;
 
-// SIMPLE COLORS (вместо спрайтов)
+// COLORS
 const bgColor = "#111";
 const pipeColor = "#2ecc71";
 const playerColor = "#f1c40f";
@@ -33,12 +33,17 @@ cvs.addEventListener("click", function () {
             break;
 
         case state.over:
-            resetGame();
+            // перезапуск только через кнопку
             break;
     }
 });
 
-// PLAYER (монета)
+// START GAME (для UI)
+function startGame() {
+    state.current = state.game;
+}
+
+// PLAYER
 const bird = {
     x: 80,
     y: 150,
@@ -90,7 +95,8 @@ const pipes = {
         if (frames % 90 === 0) {
             this.position.push({
                 x: cvs.width,
-                top: Math.random() * (cvs.height - this.gap)
+                top: Math.random() * (cvs.height - this.gap),
+                passed: false
             });
         }
 
@@ -108,7 +114,7 @@ const pipes = {
                 endGameUI();
             }
 
-            // SCORE
+            // SCORE (фикс для мобилок)
             if (!p.passed && p.x + this.width < bird.x) {
                 score.value++;
 
@@ -180,6 +186,16 @@ function resetGame() {
     score.reset();
 }
 
+// END GAME UI
+function endGameUI() {
+    document.getElementById("gameCanvas").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
+    if (typeof updateBalance === "function") {
+        updateBalance();
+    }
+}
+
 // DRAW
 function draw() {
     ctx.fillStyle = bgColor;
@@ -202,15 +218,6 @@ function loop() {
     draw();
     frames++;
     requestAnimationFrame(loop);
-}
-
-function endGameUI() {
-    document.getElementById("gameCanvas").style.display = "none";
-    document.getElementById("app").style.display = "block";
-
-    if (typeof updateBalance === "function") {
-        updateBalance();
-    }
 }
 
 loop();

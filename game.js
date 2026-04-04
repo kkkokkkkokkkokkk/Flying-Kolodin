@@ -140,21 +140,37 @@ const pipes = {
         });
     },
 
-    draw() {
-        this.list.forEach(p => {
-            // верх
-            ctx.drawImage(pipeImg, p.x, 0, this.width, p.top);
+draw() {
+    this.list.forEach(p => {
 
-            // низ (фикс!)
-            ctx.drawImage(
-                pipeImg,
-                p.x,
-                p.top + this.gap,
-                this.width,
-                cvs.height - (p.top + this.gap)
-            );
-        });
-    },
+        // ВЕРХНЯЯ ТРУБА
+        ctx.drawImage(
+            pipeImg,
+            0,
+            0,
+            pipeImg.width,
+            pipeImg.height,
+            p.x,
+            p.top - pipeImg.height,
+            this.width,
+            pipeImg.height
+        );
+
+        // НИЖНЯЯ ТРУБА
+        ctx.drawImage(
+            pipeImg,
+            0,
+            0,
+            pipeImg.width,
+            pipeImg.height,
+            p.x,
+            p.top + this.gap,
+            this.width,
+            pipeImg.height
+        );
+
+    });
+},
 
     reset() {
         this.list = [];

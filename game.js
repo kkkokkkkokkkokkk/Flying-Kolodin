@@ -1,20 +1,29 @@
+// ===== ASSETS =====
+const bgImg = new Image();
+bgImg.src = "img/bg.png";
+
+const playerImg = new Image();
+playerImg.src = "img/player.png";
+
+const pipeImg = new Image();
+pipeImg.src = "img/pipe.png";
+
 const music = new Audio("audio/music.mp3");
 music.loop = true;
 music.volume = 0.3;
+
 const jumpSound = new Audio("audio/jump.wav");
-const pipeImg = new Image();
-pipeImg.src = "img/pipe.png";
-const playerImg = new Image();
-playerImg.src = "img/player.png";
-const bgImg = new Image();
-bgImg.src = "img/bg.png";
+
+// ===== CANVAS =====
 const cvs = document.getElementById("gameCanvas");
 const ctx = cvs.getContext("2d");
 
 cvs.width = window.innerWidth;
 cvs.height = window.innerHeight;
 
+// ===== GAME STATE =====
 let frames = 0;
+let score = 0;
 
 const state = {
     current: 0,
@@ -22,15 +31,18 @@ const state = {
     over: 2
 };
 
+// ===== START GAME =====
 function startGame() {
     score = 0;
     bird.reset();
     pipes.reset();
     state.current = state.game;
 
+    music.currentTime = 0;
     music.play();
 }
 
+// ===== INPUT =====
 cvs.addEventListener("click", () => {
     if (state.current === state.game) {
         bird.flap();
@@ -39,6 +51,7 @@ cvs.addEventListener("click", () => {
     }
 });
 
+// ===== PLAYER =====
 const bird = {
     x: 80,
     y: 150,
@@ -57,17 +70,21 @@ const bird = {
         this.speed += this.gravity;
         this.y += this.speed;
 
-        if (this.y > cvs.height) endGame();
+        if (this.y > cvs.height) {
+            endGame();
+        }
     },
 
     draw() {
-    ctx.drawImage(
-        playerImg,
-        this.x - this.size,
-        this.y - this.size,
-        this.size * 2,
-        this.size * 2
-    );
+        if (playerImg.complete) {
+            ctx.drawImage(
+                playerImg,
+                this.x - this.size,
+                this.y - this.size,
+                this.size * 2,
+                this.size * 2
+            );
+        }
     },
 
     reset() {
@@ -76,10 +93,12 @@ const bird = {
     }
 };
 
+// ===== PIPES =====
 const pipes = {
     list: [],
     width: 60,
     gap: 180,
+    speed: 2,
 
     update() {
         if (state.current !== state.game) return;
@@ -93,8 +112,9 @@ const pipes = {
         }
 
         this.list.forEach((p, i) => {
-            p.x -= 2;
+            p.x -= this.speed;
 
+            // COLLISION
             if (
                 bird.x + bird.size > p.x &&
                 bird.x - bird.size < p.x + this.width &&
@@ -103,6 +123,7 @@ const pipes = {
                 endGame();
             }
 
+            // SCORE
             if (!p.passed && p.x + this.width < bird.x) {
                 score++;
 
@@ -112,6 +133,7 @@ const pipes = {
                 p.passed = true;
             }
 
+            // REMOVE
             if (p.x + this.width < 0) {
                 this.list.splice(i, 1);
             }
@@ -123,8 +145,14 @@ const pipes = {
             // верх
             ctx.drawImage(pipeImg, p.x, 0, this.width, p.top);
 
-            // низ
-            ctx.drawImage(pipeImg, p.x, p.top + this.gap, this.width, cvs.height);
+            // низ (фикс!)
+            ctx.drawImage(
+                pipeImg,
+                p.x,
+                p.top + this.gap,
+                this.width,
+                cvs.height - (p.top + this.gap)
+            );
         });
     },
 
@@ -133,33 +161,45 @@ const pipes = {
     }
 };
 
-let score = 0;
-
+// ===== END GAME =====
 function endGame() {
     state.current = state.over;
 
     document.getElementById("gameCanvas").style.display = "none";
     document.getElementById("app").style.display = "block";
 
-    updateBalance();
     music.pause();
+    music.currentTime = 0;
+
+    updateBalance();
 }
 
+// ===== UPDATE =====
 function update() {
     bird.update();
     pipes.update();
 }
 
+// ===== DRAW =====
 function draw() {
-    ctx.drawImage(bgImg, 0, 0, cvs.width, cvs.height);
+    // фон
+    if (bgImg.complete) {
+        ctx.drawImage(bgImg, 0, 0, cvs.width, cvs.height);
+    } else {
+        ctx.fillStyle = "#111";
+        ctx.fillRect(0, 0, cvs.width, cvs.height);
+    }
 
     pipes.draw();
     bird.draw();
 
+    // текст
     ctx.fillStyle = "#fff";
+    ctx.font = "24px Arial";
     ctx.fillText("Score: " + score, 20, 40);
 }
 
+// ===== LOOP =====
 function loop() {
     update();
     draw();

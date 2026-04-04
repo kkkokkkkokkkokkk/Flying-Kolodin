@@ -14,12 +14,30 @@ music.volume = 0.3;
 
 const jumpSound = new Audio("audio/jump.wav");
 
-// ===== CANVAS =====
+// ===== CANVAS (MOBILE FIX) =====
 const cvs = document.getElementById("gameCanvas");
 const ctx = cvs.getContext("2d");
 
-cvs.width = window.innerWidth;
-cvs.height = window.innerHeight;
+// 🔥 ОПТИМИЗАЦИЯ
+const scale = 0.6;
+
+cvs.width = window.innerWidth * scale;
+cvs.height = window.innerHeight * scale;
+
+cvs.style.width = window.innerWidth + "px";
+cvs.style.height = window.innerHeight + "px";
+
+ctx.scale(1 / scale, 1 / scale);
+
+// ===== BACKGROUND CACHE (ВАЖНО) =====
+const bgCanvas = document.createElement("canvas");
+const bgCtx = bgCanvas.getContext("2d");
+
+bgImg.onload = () => {
+    bgCanvas.width = cvs.width;
+    bgCanvas.height = cvs.height;
+    bgCtx.drawImage(bgImg, 0, 0, bgCanvas.width, bgCanvas.height);
+};
 
 // ===== GAME STATE =====
 let frames = 0;
@@ -43,13 +61,17 @@ function startGame() {
 }
 
 // ===== INPUT =====
-cvs.addEventListener("click", () => {
+cvs.addEventListener("touchstart", tap);
+cvs.addEventListener("click", tap);
+
+function tap() {
     if (state.current === state.game) {
         bird.flap();
+
         jumpSound.currentTime = 0;
         jumpSound.play();
     }
-});
+}
 
 // ===== PLAYER =====
 const bird = {
@@ -93,17 +115,17 @@ const bird = {
     }
 };
 
-// ===== PIPES =====
+// ===== PIPES (FIXED) =====
 const pipes = {
     list: [],
-    width: 60,
-    gap: 180,
+    width: 90,
+    gap: 200,
     speed: 2,
 
     update() {
         if (state.current !== state.game) return;
 
-        if (frames % 90 === 0) {
+        if (frames % 110 === 0) {
             this.list.push({
                 x: cvs.width,
                 top: Math.random() * (cvs.height - this.gap),
@@ -140,37 +162,35 @@ const pipes = {
         });
     },
 
-draw() {
-    this.list.forEach(p => {
+    draw() {
+        if (!pipeImg.complete) return;
 
-        // ВЕРХНЯЯ ТРУБА
-        ctx.drawImage(
-            pipeImg,
-            0,
-            0,
-            pipeImg.width,
-            pipeImg.height,
-            p.x,
-            p.top - pipeImg.height,
-            this.width,
-            pipeImg.height
-        );
+        this.list.forEach(p => {
+            const pipeHeight = pipeImg.height;
+            const pipeWidth = pipeImg.width;
 
-        // НИЖНЯЯ ТРУБА
-        ctx.drawImage(
-            pipeImg,
-            0,
-            0,
-            pipeImg.width,
-            pipeImg.height,
-            p.x,
-            p.top + this.gap,
-            this.width,
-            pipeImg.height
-        );
+            const scaleX = this.width / pipeWidth;
+            const drawHeight = pipeHeight * scaleX;
 
-    });
-},
+            // верх
+            ctx.drawImage(
+                pipeImg,
+                p.x,
+                p.top - drawHeight,
+                this.width,
+                drawHeight
+            );
+
+            // низ
+            ctx.drawImage(
+                pipeImg,
+                p.x,
+                p.top + this.gap,
+                this.width,
+                drawHeight
+            );
+        });
+    },
 
     reset() {
         this.list = [];
@@ -198,27 +218,31 @@ function update() {
 
 // ===== DRAW =====
 function draw() {
-    // фон
-    if (bgImg.complete) {
-        ctx.drawImage(bgImg, 0, 0, cvs.width, cvs.height);
-    } else {
-        ctx.fillStyle = "#111";
-        ctx.fillRect(0, 0, cvs.width, cvs.height);
+    // 🔥 быстрый фон
+    if (bgCanvas.width) {
+        ctx.drawImage(bgCanvas, 0, 0);
     }
 
     pipes.draw();
     bird.draw();
 
-    // текст
     ctx.fillStyle = "#fff";
-    ctx.font = "24px Arial";
+    ctx.font = "20px Arial";
     ctx.fillText("Score: " + score, 20, 40);
 }
 
-// ===== LOOP =====
-function loop() {
-    update();
-    draw();
+// ===== FPS LIMIT (ВАЖНО) =====
+let lastTime = 0;
+
+function loop(time = 0) {
+    const delta = time - lastTime;
+
+    if (delta > 16) {
+        update();
+        draw();
+        lastTime = time;
+    }
+
     frames++;
     requestAnimationFrame(loop);
 }

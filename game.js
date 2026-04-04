@@ -13,6 +13,9 @@ const state = {
 };
 
 function startGame() {
+    score = 0;
+    bird.reset();
+    pipes.reset();
     state.current = state.game;
 }
 
@@ -117,8 +120,8 @@ let score = 0;
 function endGame() {
     state.current = state.over;
 
-    canvas.style.display = "none";
-    app.style.display = "block";
+    document.getElementById("gameCanvas").style.display = "none";
+    document.getElementById("app").style.display = "block";
 
     updateBalance();
 }

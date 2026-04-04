@@ -13,5 +13,8 @@ updateBalance();
 playBtn.onclick = () => {
     app.style.display = "none";
     canvas.style.display = "block";
-    startGame();
+
+    setTimeout(() => {
+        startGame();
+    }, 50);
 };

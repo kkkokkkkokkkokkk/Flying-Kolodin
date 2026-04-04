@@ -19,15 +19,15 @@ const cvs = document.getElementById("gameCanvas");
 const ctx = cvs.getContext("2d");
 
 // 🔥 ОПТИМИЗАЦИЯ
-const scale = 0.6;
+const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-cvs.width = window.innerWidth * scale;
-cvs.height = window.innerHeight * scale;
+cvs.width = window.innerWidth * dpr;
+cvs.height = window.innerHeight * dpr;
 
 cvs.style.width = window.innerWidth + "px";
 cvs.style.height = window.innerHeight + "px";
 
-ctx.scale(1 / scale, 1 / scale);
+ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
 // ===== BACKGROUND CACHE (ВАЖНО) =====
 const bgCanvas = document.createElement("canvas");

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="telegram.js"></script>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flying Колодин</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+    <!-- TOP -->
+    <div class="top">
+        <img src="logo.png" class="logo">
+        <h1>Играть</h1>
+    </div>
+
+    <!-- BALANCE -->
+    <div class="card">
+        <div class="balance">
+            <span id="balance">0</span>
+            <p>очков</p>
+        </div>
+        <button id="playBtn">Начать игру</button>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="leaderboard">
+        <h2>🏆 Лидерборд</h2>
+
+        <div class="user">
+            <span>1. Player1</span>
+            <span>120</span>
+        </div>
+
+        <div class="user">
+            <span>2. Player2</span>
+            <span>95</span>
+        </div>
+
+        <div class="user">
+            <span>3. Player3</span>
+            <span>80</span>
+        </div>
+    </div>
+
+</div>
+
+<!-- GAME -->
+<canvas id="gameCanvas"></canvas>
+
+<script src="game.js"></script>
+<script src="ui.js"></script>
+
+</body>
+</html>

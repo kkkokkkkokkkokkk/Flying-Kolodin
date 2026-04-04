@@ -16,18 +16,23 @@ const jumpSound = new Audio("audio/jump.wav");
 
 // ===== CANVAS =====
 const cvs = document.getElementById("gameCanvas");
-const ctx = cvs.getContext("2d");
+const ctx = cvs.getContext("2d", { alpha: false });
 
 cvs.width = window.innerWidth;
 cvs.height = window.innerHeight;
 
-// ===== 🔥 КЕШ ФОНА (главный фикс лагов)
+// ===== ⚡ ОПТИМИЗАЦИЯ =====
+ctx.imageSmoothingEnabled = false;
+
+// ===== BACKGROUND CACHE =====
 const bgCanvas = document.createElement("canvas");
 const bgCtx = bgCanvas.getContext("2d");
 
 bgImg.onload = () => {
     bgCanvas.width = cvs.width;
     bgCanvas.height = cvs.height;
+
+    // один раз масштабируем
     bgCtx.drawImage(bgImg, 0, 0, cvs.width, cvs.height);
 };
 
@@ -53,8 +58,8 @@ function startGame() {
 }
 
 // ===== INPUT =====
-cvs.addEventListener("click", tap);
 cvs.addEventListener("touchstart", tap);
+cvs.addEventListener("click", tap);
 
 function tap() {
     if (state.current === state.game) {
@@ -68,7 +73,7 @@ function tap() {
 const bird = {
     x: 80,
     y: 150,
-    size: 20,
+    size: 22,
     gravity: 0.25,
     jump: 5,
     speed: 0,
@@ -89,15 +94,15 @@ const bird = {
     },
 
     draw() {
-        if (playerImg.complete) {
-            ctx.drawImage(
-                playerImg,
-                this.x - this.size,
-                this.y - this.size,
-                this.size * 2,
-                this.size * 2
-            );
-        }
+        if (!playerImg.complete) return;
+
+        ctx.drawImage(
+            playerImg,
+            this.x - this.size,
+            this.y - this.size,
+            this.size * 2,
+            this.size * 2
+        );
     },
 
     reset() {
@@ -109,15 +114,14 @@ const bird = {
 // ===== PIPES =====
 const pipes = {
     list: [],
-    width: 60,
-    gap: 180,
+    width: 70,
+    gap: 200,
     speed: 2,
 
     update() {
         if (state.current !== state.game) return;
 
-        // 🔥 чуть реже спавн (меньше лагов)
-        if (frames % 110 === 0) {
+        if (frames % 120 === 0) {
             this.list.push({
                 x: cvs.width,
                 top: Math.random() * (cvs.height - this.gap),
@@ -125,7 +129,9 @@ const pipes = {
             });
         }
 
-        this.list.forEach((p, i) => {
+        for (let i = this.list.length - 1; i >= 0; i--) {
+            let p = this.list[i];
+
             p.x -= this.speed;
 
             // COLLISION
@@ -151,37 +157,21 @@ const pipes = {
             if (p.x + this.width < 0) {
                 this.list.splice(i, 1);
             }
-        });
+        }
     },
 
     draw() {
         if (!pipeImg.complete) return;
 
-        this.list.forEach(p => {
-            ctx.drawImage(
-                pipeImg,
-                0,
-                0,
-                pipeImg.width,
-                pipeImg.height,
-                p.x,
-                p.top - pipeImg.height,
-                this.width,
-                pipeImg.height
-            );
+        for (let p of this.list) {
+            const h = 260; // фикс высоты → нет лагов
 
-            ctx.drawImage(
-                pipeImg,
-                0,
-                0,
-                pipeImg.width,
-                pipeImg.height,
-                p.x,
-                p.top + this.gap,
-                this.width,
-                pipeImg.height
-            );
-        });
+            // верх
+            ctx.drawImage(pipeImg, p.x, p.top - h, this.width, h);
+
+            // низ
+            ctx.drawImage(pipeImg, p.x, p.top + this.gap, this.width, h);
+        }
     },
 
     reset() {
@@ -210,29 +200,24 @@ function update() {
 
 // ===== DRAW =====
 function draw() {
-    // 🔥 используем кеш вместо drawImage каждый кадр
+    // фон (БЕЗ лагов)
     if (bgCanvas.width) {
         ctx.drawImage(bgCanvas, 0, 0);
-    } else {
-        ctx.fillStyle = "#111";
-        ctx.fillRect(0, 0, cvs.width, cvs.height);
     }
 
     pipes.draw();
     bird.draw();
 
     ctx.fillStyle = "#fff";
-    ctx.font = "24px Arial";
+    ctx.font = "22px Arial";
     ctx.fillText("Score: " + score, 20, 40);
 }
 
-// ===== 🔥 FPS LIMIT =====
+// ===== LOOP (СТАБИЛЬНЫЙ FPS) =====
 let lastTime = 0;
 
 function loop(time = 0) {
-    const delta = time - lastTime;
-
-    if (delta > 16) { // ~60 FPS стабильно
+    if (time - lastTime > 16) {
         update();
         draw();
         lastTime = time;

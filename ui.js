@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const balanceEl = document.getElementById("balance");
 const playBtn = document.getElementById("playBtn");
 const canvas = document.getElementById("gameCanvas");
@@ -18,7 +17,7 @@ playBtn.onclick = () => {
     canvas.style.display = "block";
 
     startGame(); // из game.js
-=======
+
 const balanceEl = document.getElementById("balance");
 const playBtn = document.getElementById("playBtn");
 const canvas = document.getElementById("gameCanvas");
@@ -38,5 +37,4 @@ playBtn.onclick = () => {
     canvas.style.display = "block";
 
     startGame(); // из game.js
->>>>>>> 89564aa273e052cd3f511db17e1d0c4c99b29d93
 };

@@ -1,3 +1,13 @@
+const music = new Audio("audio/music.mp3");
+music.loop = true;
+music.volume = 0.3;
+const jumpSound = new Audio("audio/jump.wav");
+const pipeImg = new Image();
+pipeImg.src = "img/pipe.png";
+const playerImg = new Image();
+playerImg.src = "img/player.png";
+const bgImg = new Image();
+bgImg.src = "img/bg.png";
 const cvs = document.getElementById("gameCanvas");
 const ctx = cvs.getContext("2d");
 
@@ -17,11 +27,15 @@ function startGame() {
     bird.reset();
     pipes.reset();
     state.current = state.game;
+
+    music.play();
 }
 
 cvs.addEventListener("click", () => {
     if (state.current === state.game) {
         bird.flap();
+        jumpSound.currentTime = 0;
+        jumpSound.play();
     }
 });
 
@@ -47,10 +61,13 @@ const bird = {
     },
 
     draw() {
-        ctx.fillStyle = "gold";
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
+    ctx.drawImage(
+        playerImg,
+        this.x - this.size,
+        this.y - this.size,
+        this.size * 2,
+        this.size * 2
+    );
     },
 
     reset() {
@@ -102,11 +119,12 @@ const pipes = {
     },
 
     draw() {
-        ctx.fillStyle = "green";
-
         this.list.forEach(p => {
-            ctx.fillRect(p.x, 0, this.width, p.top);
-            ctx.fillRect(p.x, p.top + this.gap, this.width, cvs.height);
+            // верх
+            ctx.drawImage(pipeImg, p.x, 0, this.width, p.top);
+
+            // низ
+            ctx.drawImage(pipeImg, p.x, p.top + this.gap, this.width, cvs.height);
         });
     },
 
@@ -124,6 +142,7 @@ function endGame() {
     document.getElementById("app").style.display = "block";
 
     updateBalance();
+    music.pause();
 }
 
 function update() {
@@ -132,8 +151,7 @@ function update() {
 }
 
 function draw() {
-    ctx.fillStyle = "#111";
-    ctx.fillRect(0, 0, cvs.width, cvs.height);
+    ctx.drawImage(bgImg, 0, 0, cvs.width, cvs.height);
 
     pipes.draw();
     bird.draw();

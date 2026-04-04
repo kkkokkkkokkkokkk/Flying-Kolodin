@@ -1,6 +1,6 @@
 // ===== ASSETS =====
 const bgImg = new Image();
-bgImg.src = "img/bg.png";
+bgImg.src = "img/bg.jpg";
 
 const playerImg = new Image();
 playerImg.src = "img/player.png";

@@ -1,4 +1,6 @@
 // ===== ASSETS =====
+const SCALE = cvs.width / 400; // базовый размер
+
 const bgImg = new Image();
 bgImg.src = "img/bg.jpg";
 
@@ -73,7 +75,7 @@ function tap() {
 const bird = {
     x: 80,
     y: 150,
-    size: 22,
+    size: 20 * SCALE,
     gravity: 0.25,
     jump: 5,
     speed: 0,
@@ -114,14 +116,14 @@ const bird = {
 // ===== PIPES =====
 const pipes = {
     list: [],
-    width: 70,
-    gap: 200,
+    width: 60 * SCALE,
+    gap: 180 * SCALE,
     speed: 2,
 
     update() {
         if (state.current !== state.game) return;
 
-        if (frames % 120 === 0) {
+        if (frames % 140 === 0) {
             this.list.push({
                 x: cvs.width,
                 top: Math.random() * (cvs.height - this.gap),
@@ -160,19 +162,16 @@ const pipes = {
         }
     },
 
-    draw() {
-        if (!pipeImg.complete) return;
+draw() {
+    if (!pipeImg.complete) return;
 
-        for (let p of this.list) {
-            const h = 260; // фикс высоты → нет лагов
+    const h = 250 * SCALE;
 
-            // верх
-            ctx.drawImage(pipeImg, p.x, p.top - h, this.width, h);
-
-            // низ
-            ctx.drawImage(pipeImg, p.x, p.top + this.gap, this.width, h);
-        }
-    },
+    for (let p of this.list) {
+        ctx.drawImage(pipeImg, p.x, p.top - h, this.width, h);
+        ctx.drawImage(pipeImg, p.x, p.top + this.gap, this.width, h);
+    }
+},
 
     reset() {
         this.list = [];
@@ -217,7 +216,7 @@ function draw() {
 let lastTime = 0;
 
 function loop(time = 0) {
-    if (time - lastTime > 16) {
+    if (time - lastTime > 20) {
         update();
         draw();
         lastTime = time;

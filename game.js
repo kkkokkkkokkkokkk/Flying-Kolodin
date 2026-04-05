@@ -23,13 +23,6 @@ music.volume = 0.3;
 
 const jumpSound = new Audio("audio/jump.wav");
 
-// ===== CANVAS =====
-const cvs = document.getElementById("gameCanvas");
-const ctx = cvs.getContext("2d", { alpha: false });
-
-cvs.width = window.innerWidth;
-cvs.height = window.innerHeight;
-
 // ===== ⚡ ОПТИМИЗАЦИЯ =====
 ctx.imageSmoothingEnabled = false;
 

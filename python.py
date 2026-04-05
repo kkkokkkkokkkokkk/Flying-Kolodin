@@ -3,8 +3,8 @@ from telegram import Bot
 from telegram.error import TelegramError
 
 TOKEN = '8632388056:AAFltKzfIfNA3YoGpF26Sf4PTAaH6EzmuRs'
-USER_IDS = [7625696515] # Replace with your list of IDs
-MESSAGE = "Крупная обнова, запускаем бота играем! ТАПАЕМ КОЛОДИНА РЕБЯТКИИ!!!"
+USER_IDS = [7460546102, 7258895996, 7731489232, 1237015816] # Replace with your list of IDs
+MESSAGE = "И СНОВА РЕБЯТКИ НОВОЕ КРУПНОЕ ОБНОВЛЕНИЕ! ДОБАВЛЕН ЛИДЕРБОРД КОТОРЫЙ РАБОТАЕТ ТЕПЕРЬ ВО ИСТИНУ ИГРАЙТЕ, ПОБЕЖДАЙТЕ, И ВЫХОДИТЕ В ТОП!!! (Мы ценим анонимность по этому ваши юзернеймы скрыты <3)"
 
 async def broadcast_message():
     bot = Bot(token=TOKEN)

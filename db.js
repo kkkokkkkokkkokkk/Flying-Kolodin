@@ -2,13 +2,12 @@
 const SUPABASE_URL = "https://uqkuklqdfhatqcvwmzdl.supabase.co";
 const SUPABASE_KEY = "sb_publishable_R4tj_IV6Jur4OzqSKk6SJA_N5XY5WSy";
 
-// Загрузить данные текущего игрока из БД и синхронизировать localStorage
 async function loadMyProfile() {
   const userId = localStorage.getItem("user_id");
   if (!userId) return;
 
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/players?user_id=eq.${userId}&select=best_score,total_coins`,
+    `${SUPABASE_URL}/rest/v1/players?user_id=eq.${userId}&select=best_score,total_coins,hidden`,
     {
       headers: {
         "apikey":        SUPABASE_KEY,
@@ -19,18 +18,20 @@ async function loadMyProfile() {
 
   const data = await res.json();
   if (data?.[0]) {
-    // БД — источник правды, перезаписываем localStorage
     localStorage.setItem("balance", data[0].total_coins ?? 0);
+    // Запомним hidden чтобы не делать лишний запрос в syncPlayer
+    localStorage.setItem("hidden", data[0].hidden ? "1" : "0");
   }
 }
 
 async function syncPlayer(score) {
-  const userId  = localStorage.getItem("user_id");
+  const userId   = localStorage.getItem("user_id");
   const username = localStorage.getItem("username");
   if (!userId) return;
 
   const avatarUrl = window.Telegram?.WebApp?.initDataUnsafe?.user?.photo_url || null;
   const coins     = parseInt(localStorage.getItem("balance")) || 0;
+  const isHidden  = localStorage.getItem("hidden") === "1";
 
   // Читаем текущий best_score
   const existing = await fetch(
@@ -46,6 +47,19 @@ async function syncPlayer(score) {
   const currentBest = existing?.[0]?.best_score ?? -1;
   const newBest = Math.max(score, currentBest);
 
+  // Если hidden — не трогаем username и avatar_url
+  const payload = {
+    user_id:     parseInt(userId),
+    best_score:  newBest,
+    total_coins: coins,
+    updated_at:  new Date().toISOString()
+  };
+
+  if (!isHidden) {
+    payload.username   = username || "Игрок";
+    payload.avatar_url = avatarUrl;
+  }
+
   await fetch(`${SUPABASE_URL}/rest/v1/players`, {
     method: "POST",
     headers: {
@@ -54,14 +68,7 @@ async function syncPlayer(score) {
       "Content-Type":  "application/json",
       "Prefer":        "resolution=merge-duplicates"
     },
-    body: JSON.stringify({
-      user_id:     parseInt(userId),
-      username:    username || "Игрок",
-      avatar_url:  avatarUrl,
-      best_score:  newBest,
-      total_coins: coins,
-      updated_at:  new Date().toISOString()
-    })
+    body: JSON.stringify(payload)
   });
 }
 

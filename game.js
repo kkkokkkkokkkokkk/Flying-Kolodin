@@ -1,5 +1,12 @@
 // ===== ASSETS =====
-const SCALE = cvs.width / 400; // базовый размер
+const cvs = document.getElementById("gameCanvas");
+const ctx = cvs.getContext("2d", { alpha: false });
+
+cvs.width = window.innerWidth;
+cvs.height = window.innerHeight;
+
+// ✅ теперь правильно
+const SCALE = Math.min(cvs.width / 400, 1.5);
 
 const bgImg = new Image();
 bgImg.src = "img/bg.jpg";
@@ -73,11 +80,11 @@ function tap() {
 
 // ===== PLAYER =====
 const bird = {
-    x: 80,
+    x: 80 * SCALE,
     y: 150,
     size: 20 * SCALE,
-    gravity: 0.25,
-    jump: 5,
+    gravity: 0.25 * SCALE,
+    jump: 5 * SCALE,
     speed: 0,
 
     flap() {

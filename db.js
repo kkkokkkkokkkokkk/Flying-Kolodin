@@ -2,16 +2,37 @@
 const SUPABASE_URL = "https://uqkuklqdfhatqcvwmzdl.supabase.co";
 const SUPABASE_KEY = "sb_publishable_R4tj_IV6Jur4OzqSKk6SJA_N5XY5WSy";
 
+// Загрузить данные текущего игрока из БД и синхронизировать localStorage
+async function loadMyProfile() {
+  const userId = localStorage.getItem("user_id");
+  if (!userId) return;
+
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/players?user_id=eq.${userId}&select=best_score,total_coins`,
+    {
+      headers: {
+        "apikey":        SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY
+      }
+    }
+  );
+
+  const data = await res.json();
+  if (data?.[0]) {
+    // БД — источник правды, перезаписываем localStorage
+    localStorage.setItem("balance", data[0].total_coins ?? 0);
+  }
+}
+
 async function syncPlayer(score) {
   const userId  = localStorage.getItem("user_id");
   const username = localStorage.getItem("username");
-
   if (!userId) return;
 
   const avatarUrl = window.Telegram?.WebApp?.initDataUnsafe?.user?.photo_url || null;
   const coins     = parseInt(localStorage.getItem("balance")) || 0;
 
-  // Шаг 1: читаем текущий best_score игрока
+  // Читаем текущий best_score
   const existing = await fetch(
     `${SUPABASE_URL}/rest/v1/players?user_id=eq.${userId}&select=best_score`,
     {
@@ -23,8 +44,6 @@ async function syncPlayer(score) {
   ).then(r => r.json());
 
   const currentBest = existing?.[0]?.best_score ?? -1;
-
-  // Шаг 2: обновляем только если новый результат лучше
   const newBest = Math.max(score, currentBest);
 
   await fetch(`${SUPABASE_URL}/rest/v1/players`, {
@@ -56,7 +75,6 @@ async function loadLeaderboard() {
       }
     }
   );
-
   if (!res.ok) throw new Error("Leaderboard fetch failed: " + res.status);
   return await res.json();
 }

@@ -1,5 +1,3 @@
-async function showGameOver(sessionScore) {
-
 // ── UI.JS ──────────────────────────────────────
 const app        = document.getElementById("app");
 const canvas     = document.getElementById("gameCanvas");
@@ -10,65 +8,80 @@ const retryBtn   = document.getElementById("retryBtn");
 const menuBtn    = document.getElementById("menuBtn");
 const finalScore = document.getElementById("finalScore");
 const earnedEl   = document.getElementById("earned");
-
+ 
 // ── Read & render balance ──────────────────────
 function updateBalanceDisplay() {
   balanceEl.textContent = localStorage.getItem("balance") || "0";
 }
 updateBalanceDisplay();
-
+ 
+// Загрузить лидерборд при старте
+loadLeaderboard().then(renderLeaderboard).catch(console.error);
+ 
 // ── Play button ────────────────────────────────
 playBtn.addEventListener("click", () => {
   app.style.display    = "none";
   gameOverEl.classList.add("hidden");
   canvas.style.display = "block";
-  startGame();          // defined in game.js
+  startGame(); // defined in game.js
 });
-
+ 
 // ── Game Over (called from game.js) ───────────
-function showGameOver(sessionScore) {
+async function showGameOver(sessionScore) {
   canvas.style.display = "none";
   gameOverEl.classList.remove("hidden");
-
+ 
   finalScore.textContent = sessionScore;
-  earnedEl.textContent   = sessionScore;   // 1 coin per pipe passed
-
+  earnedEl.textContent   = sessionScore;
+ 
   updateBalanceDisplay();
+ 
+  try {
+    await syncPlayer(sessionScore);         // db.js
+    const top = await loadLeaderboard();    // db.js
+    renderLeaderboard(top);
+  } catch (e) {
+    console.error("DB error:", e);
+  }
 }
-
+ 
+// ── Render leaderboard ─────────────────────────
+function renderLeaderboard(players) {
+  if (!players || !Array.isArray(players)) return;
+ 
+  const medals    = ["🥇", "🥈", "🥉"];
+  const rankClass = ["gold", "silver", "bronze"];
+  const list      = document.getElementById("leaderboard");
+ 
+  list.innerHTML = players.map((p, i) => `
+    <li class="lb-row">
+      <span class="lb-rank ${rankClass[i] || ""}">${medals[i] || i + 1}</span>
+      <img class="lb-avatar"
+           src="${p.avatar_url || 'img/default-avatar.png'}"
+           onerror="this.src='img/default-avatar.png'"
+           alt="">
+      <span class="lb-name">${escHtml(p.username || "Игрок")}</span>
+      <span class="lb-score">${p.best_score} 🪙</span>
+    </li>
+  `).join("");
+}
+ 
+function escHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+ 
 // ── Retry ──────────────────────────────────────
 retryBtn.addEventListener("click", () => {
   gameOverEl.classList.add("hidden");
   canvas.style.display = "block";
   startGame();
 });
-
+ 
 // ── Back to menu ───────────────────────────────
 menuBtn.addEventListener("click", () => {
   gameOverEl.classList.add("hidden");
   app.style.display = "flex";
   updateBalanceDisplay();
 });
-
-  // сохранить результат
-  await syncPlayer(sessionScore);
-
-  // загрузить и отобразить топ
-  const top = await loadLeaderboard();
-  renderLeaderboard(top);
-}
-
-function renderLeaderboard(players) {
-  const medals = ["🥇", "🥈", "🥉"];
-  const list = document.getElementById("leaderboard");
-
-  list.innerHTML = players.map((p, i) => `
-    <li class="lb-row">
-      <span class="lb-rank ${["gold","silver","bronze"][i] || ""}">${medals[i] || i+1}</span>
-      <img class="lb-avatar" src="${p.avatar_url || 'img/default-avatar.png'}"
-           onerror="this.src='img/default-avatar.png'">
-      <span class="lb-name">${p.username || "Игрок"}</span>
-      <span class="lb-score">${p.best_score} 🪙</span>
-    </li>
-  `).join("");
-}

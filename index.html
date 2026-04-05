@@ -3,25 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Flappy Bird</title>
+<title>Flying Kolodin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<script src="db.js"></script> 
+<!-- Telegram SDK первым -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-
+ 
 <!-- ── MENU SCREEN ── -->
 <div id="app">
   <div class="stars" aria-hidden="true"></div>
-
+ 
   <header class="top">
     <img src="img/logo.png" class="logo" alt="Logo" onerror="this.style.display='none'">
     <h1 class="title">FLYING KOLODIN 🪰</h1>
-    <p class="subtitle">Летающий Колодин! Играй, побеждай, выходи в топ </p>
+    <p class="subtitle">Летающий Колодин! Играй, побеждай, выходи в топ</p>
   </header>
-
+ 
   <div class="card">
     <div class="balance-wrap">
       <div class="coin">🪙</div>
@@ -34,20 +34,18 @@
       <span>▶ Начать игру</span>
     </button>
   </div>
-
+ 
   <div class="leaderboard-wrap">
     <h2 class="lb-title">🏆 Лидерборд</h2>
     <ul id="leaderboard" class="lb-list">
-      <li class="lb-row"><span class="lb-rank gold">1</span><span class="lb-name">КОЛОДИН</span><span class="lb-score">1 ЛЯМ 🪙</span></li>
-      <li class="lb-row"><span class="lb-rank silver">2</span><span class="lb-name">Player2</span><span class="lb-score">95 🪙</span></li>
-      <li class="lb-row"><span class="lb-rank bronze">3</span><span class="lb-name">Player3</span><span class="lb-score">80 🪙</span></li>
+      <li class="lb-row lb-loading">Загрузка...</li>
     </ul>
   </div>
 </div>
-
+ 
 <!-- ── GAME CANVAS ── -->
 <canvas id="gameCanvas"></canvas>
-
+ 
 <!-- ── GAME OVER OVERLAY ── -->
 <div id="gameOver" class="overlay hidden">
   <div class="over-card">
@@ -59,9 +57,12 @@
     <button id="menuBtn" class="btn-menu">Главное меню</button>
   </div>
 </div>
-
+ 
+<!-- Порядок скриптов важен! -->
 <script src="telegram.js"></script>
+<script src="db.js"></script>
 <script src="game.js"></script>
 <script src="ui.js"></script>
 </body>
 </html>
+ 

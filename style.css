@@ -1,59 +1,270 @@
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0d0f1a;
+  --surface:   #161929;
+  --surface2:  #1e2236;
+  --accent:    #f9c846;
+  --accent2:   #ff6b6b;
+  --blue:      #4f9cf9;
+  --text:      #e8eaf6;
+  --muted:     #7b82a0;
+  --radius:    18px;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
-    margin: 0;
-    font-family: Arial;
-    background: #0b0b0b;
-    color: white;
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
+/* ── STARS PARALLAX BG ── */
+.stars {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(1px 1px at 10% 20%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 70%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 15%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 50%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 90%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 20% 45%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(2px 2px at 90% 10%, rgba(255,255,255,.3) 0%, transparent 100%);
+}
+
+/* ── APP SCREEN ── */
 #app {
-    padding: 20px;
+  position: relative;
+  z-index: 1;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px 32px;
+  overflow-y: auto;
+  gap: 16px;
 }
 
+/* ── HEADER ── */
 .top {
-    text-align: center;
+  text-align: center;
+  animation: fadeDown .5s ease both;
 }
 
 .logo {
-    width: 120px;
-    margin-bottom: 10px;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 16px var(--accent));
 }
 
+.title {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--accent), #ff9f43);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: .85rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ── BALANCE CARD ── */
 .card {
-    background: #1a1a1a;
-    border-radius: 20px;
-    padding: 20px;
-    margin-top: 20px;
-    text-align: center;
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: var(--radius);
+  padding: 20px;
+  animation: fadeUp .5s .1s ease both;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
 }
 
-.balance span {
-    font-size: 40px;
+.balance-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
 }
 
-button {
-    margin-top: 15px;
-    padding: 12px;
-    width: 100%;
-    border: none;
-    border-radius: 12px;
-    background: #3b82f6;
-    color: white;
+.coin {
+  font-size: 2rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px var(--accent));
 }
 
-.leaderboard {
-    margin-top: 20px;
+.balance-label {
+  font-size: .75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.user {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    background: #151515;
-    border-radius: 10px;
-    margin-top: 10px;
+.balance-value {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1.1;
 }
 
-canvas {
-    display: none;
-    background: black;
+/* ── BUTTONS ── */
+.btn-play {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), #ff9f43);
+  color: #0d0f1a;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  letter-spacing: .3px;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: 0 4px 20px rgba(249,200,70,.35);
+}
+
+.btn-play:active { transform: scale(.97); }
+
+.btn-menu {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Nunito', sans-serif;
+  font-size: .9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.btn-menu:active { background: var(--surface2); }
+
+/* ── LEADERBOARD ── */
+.leaderboard-wrap {
+  animation: fadeUp .5s .2s ease both;
+}
+
+.lb-title {
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.lb-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.lb-rank {
+  font-size: .85rem;
+  font-weight: 900;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.gold   { color: #f9c846; }
+.silver { color: #b0b8d0; }
+.bronze { color: #cd7f32; }
+
+.lb-name { flex: 1; font-weight: 700; font-size: .9rem; }
+
+.lb-score {
+  font-size: .85rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+/* ── CANVAS ── */
+#gameCanvas {
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* ── GAME OVER OVERLAY ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 24px;
+  animation: fadeIn .25s ease;
+}
+
+.overlay.hidden { display: none; }
+
+.over-card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 24px;
+  padding: 32px 24px 24px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  animation: popIn .3s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+.over-emoji { font-size: 3rem; margin-bottom: 12px; }
+.over-card h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 8px; }
+.over-card p { color: var(--muted); font-size: .95rem; }
+.over-card strong { color: var(--accent); font-size: 1.4rem; }
+.over-sub { margin-top: 4px; margin-bottom: 20px; font-size: .9rem; color: var(--accent2); }
+
+/* ── SCORE HUD (shown on canvas) ── */
+/* drawn directly on canvas */
+
+/* ── ANIMATIONS ── */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(.85); }
+  to   { opacity: 1; transform: scale(1); }
 }

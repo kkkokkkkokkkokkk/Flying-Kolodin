@@ -1,10 +1,19 @@
-const tg = window.Telegram.WebApp;
+// ── TELEGRAM.JS ───────────────────────────────
+const tg = window.Telegram?.WebApp;
 
-tg.expand();
+if (tg) {
+  tg.ready();
+  tg.expand();
 
-const user = tg.initDataUnsafe?.user;
+  // Use Telegram theme colours if available
+  const tc = tg.themeParams;
+  if (tc?.bg_color) {
+    document.documentElement.style.setProperty("--bg", tc.bg_color);
+  }
 
-if (user) {
-    localStorage.setItem("user_id", user.id);
-    localStorage.setItem("username", user.username || "player");
+  const user = tg.initDataUnsafe?.user;
+  if (user) {
+    localStorage.setItem("user_id",  String(user.id));
+    localStorage.setItem("username", user.username || user.first_name || "player");
+  }
 }

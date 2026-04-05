@@ -1,3 +1,5 @@
+async function showGameOver(sessionScore) {
+
 // ── UI.JS ──────────────────────────────────────
 const app        = document.getElementById("app");
 const canvas     = document.getElementById("gameCanvas");
@@ -47,3 +49,26 @@ menuBtn.addEventListener("click", () => {
   app.style.display = "flex";
   updateBalanceDisplay();
 });
+
+  // сохранить результат
+  await syncPlayer(sessionScore);
+
+  // загрузить и отобразить топ
+  const top = await loadLeaderboard();
+  renderLeaderboard(top);
+}
+
+function renderLeaderboard(players) {
+  const medals = ["🥇", "🥈", "🥉"];
+  const list = document.getElementById("leaderboard");
+
+  list.innerHTML = players.map((p, i) => `
+    <li class="lb-row">
+      <span class="lb-rank ${["gold","silver","bronze"][i] || ""}">${medals[i] || i+1}</span>
+      <img class="lb-avatar" src="${p.avatar_url || 'img/default-avatar.png'}"
+           onerror="this.src='img/default-avatar.png'">
+      <span class="lb-name">${p.username || "Игрок"}</span>
+      <span class="lb-score">${p.best_score} 🪙</span>
+    </li>
+  `).join("");
+}

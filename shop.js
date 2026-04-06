@@ -4,15 +4,15 @@
 
 const CATALOGUE = {
   skins: [
-    { id:"default", name:"Классик",     icon:"🐦", price:0,   file:null  },
+    { id:"default", name:"Колодин",     icon:"🐦", price:0,   file:null  },
     { id:"pixel",   name:"Пиксель",     icon:"👾", price:50,  file:"img/player_pixel.png"  },
     { id:"fire",    name:"Огонь",       icon:"🔥", price:120, file:"img/player_fire.png"   },
-    { id:"ghost",   name:"Призрак",     icon:"👻", price:80,  file:"img/player_ghost.png"  },
+    { id:"ghost",   name:"Doxer",     icon:"👻", price:80,  file:"img/player_ghost.png"  },
     { id:"robot",   name:"Робот",       icon:"🤖", price:150, file:"img/player_robot.png"  },
     { id:"alien",   name:"Инопланетян", icon:"👽", price:200, file:"img/player_alien.png"  },
   ],
   music: [
-    { id:"default", name:"Классика",    icon:"🎵", price:0,  file:null },
+    { id:"default", name:"Будни ДТК",    icon:"🎵", price:0,  file:null },
     { id:"rock",    name:"Рок",         icon:"🎸", price:80, file:"audio/music_rock.mp3"  },
     { id:"lofi",    name:"Lo-Fi",       icon:"🌊", price:60, file:"audio/music_lofi.mp3"  },
     { id:"8bit",    name:"8-бит",       icon:"🕹️", price:70, file:"audio/music_8bit.mp3"  },

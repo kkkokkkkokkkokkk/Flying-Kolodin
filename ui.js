@@ -105,21 +105,14 @@ retryBtn.addEventListener("click", () => {
 menuBtn.addEventListener("click", () => {
   gameOverEl.classList.add("hidden");
 
-  // 🔥 СНАЧАЛА УБИВАЕМ CANVAS
+  // выключаем игру
   canvas.style.display = "none";
   canvas.style.pointerEvents = "none";
   canvas.style.zIndex = "-1";
 
-  // 🔥 ПОТОМ UI
+  // включаем UI
   app.style.display = "flex";
   bottomNav.style.display = "flex";
 
   navTo("home");
-
-  // 🔥 фикс Telegram глюка
-  setTimeout(() => {
-    document.body.style.display = "none";
-    document.body.offsetHeight;
-    document.body.style.display = "";
-  }, 0);
 });

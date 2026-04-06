@@ -37,8 +37,8 @@ playBtn.addEventListener("click", () => {
   gameOverEl.classList.add("hidden");
 
   canvas.style.display = "block";
-  canvas.style.pointerEvents = "auto";
-  canvas.style.zIndex = "10"; // 🔥 вернуть обратно
+  canvas.style.zIndex = "10";          // 🔥 поднимаем
+  canvas.style.pointerEvents = "auto"; // 🔥 включаем клики
 
   startGame();
 });
@@ -46,8 +46,8 @@ playBtn.addEventListener("click", () => {
 // ── Game Over (called by game.js) ─────────────
 async function showGameOver(sessionScore) {
   canvas.style.display = "none";
-  canvas.style.pointerEvents = "none";
-  canvas.style.zIndex = "-1"; // 🔥 КРИТИЧНО
+  canvas.style.zIndex = "-1";          // 🔥 УБРАТЬ
+  canvas.style.pointerEvents = "none"; // 🔥 отключить клики
 
   bottomNav.style.display = "flex";
   gameOverEl.classList.remove("hidden");
@@ -105,15 +105,21 @@ retryBtn.addEventListener("click", () => {
 menuBtn.addEventListener("click", () => {
   gameOverEl.classList.add("hidden");
 
+  // 🔥 СНАЧАЛА УБИВАЕМ CANVAS
   canvas.style.display = "none";
   canvas.style.pointerEvents = "none";
-  canvas.style.zIndex = "-1"; // 🔥 ВАЖНО
+  canvas.style.zIndex = "-1";
 
+  // 🔥 ПОТОМ UI
+  app.style.display = "flex";
   bottomNav.style.display = "flex";
 
   navTo("home");
 
-  app.style.display = "flex";
-
-  document.body.offsetHeight;
+  // 🔥 фикс Telegram глюка
+  setTimeout(() => {
+    document.body.style.display = "none";
+    document.body.offsetHeight;
+    document.body.style.display = "";
+  }, 0);
 });

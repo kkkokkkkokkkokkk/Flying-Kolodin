@@ -5,11 +5,11 @@
 const CATALOGUE = {
   skins: [
     { id:"default", name:"Колодин",     icon:"🐦", price:0,   file:null  },
-    { id:"pixel",   name:"Пиксель",     icon:"👾", price:50,  file:"img/player_pixel.png"  },
-    { id:"fire",    name:"Огонь",       icon:"🔥", price:120, file:"img/player_fire.png"   },
+    { id:"pixel",   name:"Колодин пиксель",     icon:"👾", price:50,  file:"img/player_pixel.png"  },
+    { id:"fire",    name:"Девушка Колодина",       icon:"🔥", price:120, file:"img/player_fire.png"   },
     { id:"ghost",   name:"Doxer",     icon:"👻", price:80,  file:"img/player_ghost.png"  },
     { id:"robot",   name:"Крикун",       icon:"🗣️", price:150, file:"img/player_shouting.png"  },
-    { id:"alien",   name:"Инопланетян", icon:"👽", price:200, file:"img/player_alien.png"  },
+    { id:"alien",   name:"Ларгус", icon:"🚗", price:200, file:"img/player_alien.png"  },
   ],
   music: [
     { id:"default", name:"Будни ДТК",    icon:"🎵", price:0,  file:null },

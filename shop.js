@@ -4,12 +4,12 @@
 
 const CATALOGUE = {
   skins: [
-    { id:"default", name:"Классик",      icon:"🐦", price:0   },
-    { id:"pixel",   name:"Пиксель",      icon:"👾", price:50  },
-    { id:"fire",    name:"Огонь",        icon:"🔥", price:120 },
-    { id:"ghost",   name:"Призрак",      icon:"👻", price:80  },
-    { id:"robot",   name:"Робот",        icon:"🤖", price:150 },
-    { id:"alien",   name:"Инопланетян",  icon:"👽", price:200 },
+    { id:"default", name:"Колодин",      icon:"🐦", price:0   },
+    { id:"pixel",   name:"Не доступно",      icon:"👾", price:50  },
+    { id:"fire",    name:"Не доступно",        icon:"🔥", price:120 },
+    { id:"ghost",   name:"Не доступно",      icon:"👻", price:80  },
+    { id:"robot",   name:"Не доступно",        icon:"🤖", price:150 },
+    { id:"alien",   name:"Не доступно",  icon:"👽", price:200 },
   ],
   music: [
     { id:"default", name:"Классика",     icon:"🎵", price:0  },
@@ -18,13 +18,13 @@ const CATALOGUE = {
     { id:"8bit",    name:"8-бит",        icon:"🕹️", price:70 },
   ],
   bg: [
-    { id:"default", name:"Оригинал",     icon:"🌅", price:0   },
-    { id:"city",    name:"Город",        icon:"🌆", price:70  },
-    { id:"space",   name:"Космос",       icon:"🌌", price:100 },
+    { id:"default", name:"ДТК",     icon:"🌅", price:0   },
+    { id:"city",    name:"Дзержинск",        icon:"🌆", price:70  },
+    { id:"space",   name:"Маджестик",       icon:"🌌", price:100 },
     { id:"forest",  name:"Лес",          icon:"🌲", price:90  },
   ],
   pipes: [
-    { id:"default", name:"Зелёные",      icon:"🟩", price:0   },
+    { id:"default", name:"Классика",      icon:"🟩", price:0   },
     { id:"stone",   name:"Камень",       icon:"🪨", price:90  },
     { id:"neon",    name:"Неон",         icon:"⚡", price:150 },
     { id:"gold",    name:"Золото",       icon:"🏆", price:200 },

@@ -8,7 +8,7 @@ const CATALOGUE = {
     { id:"pixel",   name:"Пиксель",     icon:"👾", price:50,  file:"img/player_pixel.png"  },
     { id:"fire",    name:"Огонь",       icon:"🔥", price:120, file:"img/player_fire.png"   },
     { id:"ghost",   name:"Doxer",     icon:"👻", price:80,  file:"img/player_ghost.png"  },
-    { id:"robot",   name:"Робот",       icon:"🤖", price:150, file:"img/player_robot.png"  },
+    { id:"robot",   name:"Крикун",       icon:"🗣️", price:150, file:"img/player_shouting.png"  },
     { id:"alien",   name:"Инопланетян", icon:"👽", price:200, file:"img/player_alien.png"  },
   ],
   music: [
@@ -18,13 +18,13 @@ const CATALOGUE = {
     { id:"8bit",    name:"8-бит",       icon:"🕹️", price:70, file:"audio/music_8bit.mp3"  },
   ],
   bg: [
-    { id:"default", name:"Оригинал",    icon:"🌅", price:0,   file:null },
-    { id:"city",    name:"Город",       icon:"🌆", price:70,  file:"img/bg_city.jpg"   },
-    { id:"space",   name:"Космос",      icon:"🌌", price:100, file:"img/bg_space.jpg"  },
+    { id:"default", name:"ДТК",    icon:"🌅", price:0,   file:null },
+    { id:"city",    name:"Дзержинск",       icon:"🌆", price:70,  file:"img/bg_city.jpg"   },
+    { id:"space",   name:"Маджестик",      icon:"🌌", price:100, file:"img/bg_space.jpg"  },
     { id:"forest",  name:"Лес",         icon:"🌲", price:90,  file:"img/bg_forest.jpg" },
   ],
   pipes: [
-    { id:"default", name:"Зелёные",     icon:"🟩", price:0,   file:null },
+    { id:"default", name:"Классика",     icon:"🟩", price:0,   file:null },
     { id:"stone",   name:"Камень",      icon:"🪨", price:90,  file:"img/pipe_stone.png" },
     { id:"neon",    name:"Неон",        icon:"⚡", price:150, file:"img/pipe_neon.png"  },
     { id:"gold",    name:"Золото",      icon:"🏆", price:200, file:"img/pipe_gold.png"  },

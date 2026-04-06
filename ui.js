@@ -37,7 +37,8 @@ playBtn.addEventListener("click", () => {
   gameOverEl.classList.add("hidden");
 
   canvas.style.display = "block";
-  canvas.style.pointerEvents = "auto"; // 🔥 ВАЖНО
+  canvas.style.pointerEvents = "auto";
+  canvas.style.zIndex = "10"; // 🔥 вернуть обратно
 
   startGame();
 });
@@ -45,14 +46,15 @@ playBtn.addEventListener("click", () => {
 // ── Game Over (called by game.js) ─────────────
 async function showGameOver(sessionScore) {
   canvas.style.display = "none";
-  canvas.style.pointerEvents = "none"; // 🔥 фикс кликов
+  canvas.style.pointerEvents = "none";
+  canvas.style.zIndex = "-1"; // 🔥 КРИТИЧНО
+
   bottomNav.style.display = "flex";
   gameOverEl.classList.remove("hidden");
 
   finalScore.textContent = sessionScore;
   earnedEl.textContent   = sessionScore;
 
-  // Track local best for Account tab
   const prev = parseInt(localStorage.getItem("best_score") || "0");
   if (sessionScore > prev) localStorage.setItem("best_score", sessionScore);
 
@@ -89,8 +91,13 @@ function esc(s) {
 // ── Retry ──────────────────────────────────────
 retryBtn.addEventListener("click", () => {
   gameOverEl.classList.add("hidden");
+
   canvas.style.display = "block";
+  canvas.style.pointerEvents = "auto";
+  canvas.style.zIndex = "10";
+
   bottomNav.style.display = "none";
+
   startGame();
 });
 
@@ -98,13 +105,15 @@ retryBtn.addEventListener("click", () => {
 menuBtn.addEventListener("click", () => {
   gameOverEl.classList.add("hidden");
 
-  canvas.style.display = "none";   // 🔥 важно
+  canvas.style.display = "none";
+  canvas.style.pointerEvents = "none";
+  canvas.style.zIndex = "-1"; // 🔥 ВАЖНО
+
   bottomNav.style.display = "flex";
 
   navTo("home");
 
   app.style.display = "flex";
 
-  // 🔥 форс перерисовки (фикс Telegram бага)
   document.body.offsetHeight;
 });

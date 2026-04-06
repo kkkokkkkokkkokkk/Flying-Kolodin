@@ -11,127 +11,101 @@
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     SCREEN: HOME (leaderboard + play)
-══════════════════════════════════════ -->
-<div id="screen-home" class="screen active">
+<!-- ══ HOME SCREEN ══ -->
+<div id="app">
   <div class="stars" aria-hidden="true"></div>
-  <div class="screen-scroll">
-    <header class="top">
-      <img src="img/logo.png" class="logo" alt="" onerror="this.style.display='none'">
-      <h1 class="title">FLYING KOLODIN 🪰</h1>
-      <p class="subtitle">Летающий Колодин! Играй, побеждай, выходи в топ</p>
-    </header>
-
-    <div class="card">
-      <div class="balance-wrap">
-        <div class="coin">🪙</div>
-        <div>
-          <div class="balance-label">Монеты</div>
-          <div id="balance" class="balance-value">0</div>
-        </div>
+  <header class="top">
+    <img src="img/logo.png" class="logo" alt="" onerror="this.style.display='none'">
+    <h1 class="title">FLYING KOLODIN 🪰</h1>
+    <p class="subtitle">Летающий Колодин! Играй, побеждай, выходи в топ</p>
+  </header>
+  <div class="card">
+    <div class="balance-wrap">
+      <div class="coin">🪙</div>
+      <div>
+        <div class="balance-label">Монеты</div>
+        <div id="balance" class="balance-value">0</div>
       </div>
-      <button id="playBtn" class="btn-play"><span>▶ Начать игру</span></button>
     </div>
-
-    <div class="leaderboard-wrap">
-      <h2 class="lb-title">🏆 Лидерборд</h2>
-      <ul id="leaderboard" class="lb-list">
-        <li class="lb-row lb-loading">Загрузка...</li>
-      </ul>
-    </div>
+    <button id="playBtn" class="btn-play"><span>▶ Начать игру</span></button>
+  </div>
+  <div class="leaderboard-wrap">
+    <h2 class="lb-title">🏆 Лидерборд</h2>
+    <ul id="leaderboard" class="lb-list">
+      <li class="lb-row lb-loading">Загрузка...</li>
+    </ul>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     SCREEN: SHOP
-══════════════════════════════════════ -->
-<div id="screen-shop" class="screen">
+<!-- ══ SHOP SCREEN ══ -->
+<div id="shop-screen" class="screen-hidden">
   <div class="stars" aria-hidden="true"></div>
-  <div class="screen-scroll">
+  <div class="shop-scroll">
     <header class="top">
       <h1 class="title">FLYING KOLODIN 🪰</h1>
-      <p class="subtitle">Покупай скины, музыку и многое другое</p>
-      <div class="coins-pill">🪙 <span id="shop-balance">0</span> монет</div>
+      <p class="subtitle">Трать монеты на скины, музыку и многое другое</p>
+      <div class="coins-pill">🪙 <span id="shop-balance">0</span></div>
     </header>
 
-    <!-- inner tab bar: Shop / Account -->
     <div class="inner-tabs">
-      <button class="inner-tab active" id="itab-shop" onclick="switchInnerTab('shop')">Магазин</button>
-      <button class="inner-tab" id="itab-account" onclick="switchInnerTab('account')">Аккаунт</button>
+      <button class="inner-tab active" id="itab-shop"    onclick="switchInnerTab('shop')">Магазин</button>
+      <button class="inner-tab"        id="itab-account" onclick="switchInnerTab('account')">Аккаунт</button>
     </div>
 
-    <!-- ── SHOP PANEL ── -->
-    <div id="ipanel-shop" class="ipanel">
-
-      <p class="shop-section-label">🐦 Скины птицы</p>
+    <!-- SHOP PANEL -->
+    <div id="ipanel-shop">
+      <p class="section-label">🐦 Скины птицы</p>
       <div class="shop-grid" id="grid-skins"></div>
 
-      <p class="shop-section-label">🎵 Музыка</p>
+      <p class="section-label">🎵 Музыка</p>
       <div class="shop-grid" id="grid-music"></div>
 
-      <p class="shop-section-label">🌆 Фоны</p>
+      <p class="section-label">🌆 Фоны</p>
       <div class="shop-grid" id="grid-bg"></div>
 
-      <p class="shop-section-label">🟩 Трубы</p>
+      <p class="section-label">🟩 Трубы</p>
       <div class="shop-grid" id="grid-pipes"></div>
 
-      <p class="shop-section-label">⛏️ Minecraft</p>
-      <div class="shop-item-row minecraft-row">
-        <div class="si-icon">⛏️</div>
-        <div class="si-info">
-          <div class="si-name">Flying Kolodin Mod</div>
-          <div class="si-desc">Официальный мод для Minecraft</div>
+      <p class="section-label">⛏️ Minecraft</p>
+      <div class="mc-row">
+        <div class="mc-icon">⛏️</div>
+        <div class="mc-info">
+          <div class="mc-name">Flying Kolodin Mod</div>
+          <div class="mc-desc">Официальный мод для Minecraft</div>
         </div>
         <a href="https://example.com/mod" class="btn-link" target="_blank">↓ Скачать</a>
       </div>
-
     </div>
 
-    <!-- ── ACCOUNT PANEL ── -->
-    <div id="ipanel-account" class="ipanel hidden">
-      <div class="account-hero">
-        <div class="account-avatar" id="acc-avatar">?</div>
+    <!-- ACCOUNT PANEL -->
+    <div id="ipanel-account" class="panel-hidden">
+      <div class="acc-hero">
+        <div class="acc-avatar" id="acc-avatar">?</div>
         <div>
-          <div class="account-name" id="acc-name">Игрок</div>
-          <div class="account-sub">Telegram аккаунт</div>
+          <div class="acc-name" id="acc-name">Игрок</div>
+          <div class="acc-sub">Telegram аккаунт</div>
         </div>
       </div>
-
-      <div class="stats-card">
-        <div class="stat-item">
-          <span class="stat-label">Лучший счёт</span>
-          <span class="stat-val" id="acc-best">0</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Монеты</span>
-          <span class="stat-val" id="acc-coins">0</span>
-        </div>
+      <div class="stats-row">
+        <div class="stat-box"><span class="stat-lbl">Лучший счёт</span><span class="stat-val" id="acc-best">0</span></div>
+        <div class="stat-box"><span class="stat-lbl">Монеты</span><span class="stat-val" id="acc-coins">0</span></div>
       </div>
-
-      <p class="shop-section-label">🐦 Скины</p>
-      <div id="acc-grid-skins" class="shop-grid"></div>
-
-      <p class="shop-section-label">🎵 Музыка</p>
-      <div id="acc-grid-music" class="shop-grid"></div>
-
-      <p class="shop-section-label">🌆 Фоны</p>
-      <div id="acc-grid-bg" class="shop-grid"></div>
-
-      <p class="shop-section-label">🟩 Трубы</p>
-      <div id="acc-grid-pipes" class="shop-grid"></div>
+      <p class="section-label">🐦 Скины</p>
+      <div class="shop-grid" id="acc-skins"></div>
+      <p class="section-label">🎵 Музыка</p>
+      <div class="shop-grid" id="acc-music"></div>
+      <p class="section-label">🌆 Фоны</p>
+      <div class="shop-grid" id="acc-bg"></div>
+      <p class="section-label">🟩 Трубы</p>
+      <div class="shop-grid" id="acc-pipes"></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     CANVAS (game)
-══════════════════════════════════════ -->
+<!-- ══ CANVAS ══ -->
 <canvas id="gameCanvas"></canvas>
 
-<!-- ══════════════════════════════════════
-     GAME OVER OVERLAY
-══════════════════════════════════════ -->
+<!-- ══ GAME OVER ══ -->
 <div id="gameOver" class="overlay hidden">
   <div class="over-card">
     <div class="over-emoji">💥</div>
@@ -143,20 +117,19 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     BOTTOM NAV BAR
-══════════════════════════════════════ -->
-<nav class="bottom-nav" id="bottomNav">
-  <button class="nav-btn active" id="nav-home" onclick="showScreen('home')">
-    <span class="nav-icon">🏠</span>
-    <span class="nav-label">Главная</span>
+<!-- ══ BOTTOM NAV ══ -->
+<nav id="bottomNav" class="bottom-nav">
+  <button class="nav-btn active" id="nav-home" onclick="navTo('home')">
+    <span class="nav-ico">🏠</span>
+    <span class="nav-lbl">Главная</span>
   </button>
-  <button class="nav-btn" id="nav-shop" onclick="showScreen('shop')">
-    <span class="nav-icon">🛒</span>
-    <span class="nav-label">Магазин</span>
+  <button class="nav-btn" id="nav-shop" onclick="navTo('shop')">
+    <span class="nav-ico">🛒</span>
+    <span class="nav-lbl">Магазин</span>
   </button>
 </nav>
 
+<!-- script order matters -->
 <script src="telegram.js"></script>
 <script src="db.js"></script>
 <script src="shop.js"></script>

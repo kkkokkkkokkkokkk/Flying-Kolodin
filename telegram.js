@@ -8,6 +8,7 @@ if (tg) {
   const tc = tg.themeParams;
   if (tc?.bg_color) {
     document.documentElement.style.setProperty("--bg", tc.bg_color);
+    document.body.style.overflow = "hidden";
   }
  
   const user = tg.initDataUnsafe?.user;

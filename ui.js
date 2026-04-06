@@ -32,16 +32,20 @@ init();
 
 // ── Play ───────────────────────────────────────
 playBtn.addEventListener("click", () => {
-  app.style.display    = "none";
+  app.style.display = "none";
   bottomNav.style.display = "none";
   gameOverEl.classList.add("hidden");
+
   canvas.style.display = "block";
+  canvas.style.pointerEvents = "auto"; // 🔥 ВАЖНО
+
   startGame();
 });
 
 // ── Game Over (called by game.js) ─────────────
 async function showGameOver(sessionScore) {
   canvas.style.display = "none";
+  canvas.style.pointerEvents = "none"; // 🔥 фикс кликов
   bottomNav.style.display = "flex";
   gameOverEl.classList.remove("hidden");
 
@@ -93,7 +97,14 @@ retryBtn.addEventListener("click", () => {
 // ── Back to menu ───────────────────────────────
 menuBtn.addEventListener("click", () => {
   gameOverEl.classList.add("hidden");
-  navTo("home");         // shop.js handles screen switching
+
+  canvas.style.display = "none";   // 🔥 важно
+  bottomNav.style.display = "flex";
+
+  navTo("home");
+
   app.style.display = "flex";
-  updateBalanceDisplay();
+
+  // 🔥 форс перерисовки (фикс Telegram бага)
+  document.body.offsetHeight;
 });

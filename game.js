@@ -22,9 +22,9 @@ const SCALE = () => Math.min(cvs.width / 400, 1.5);
 ctx.imageSmoothingEnabled = false;
 
 // ── Assets ────────────────────────────────────
-const bgImg     = new Image(); bgImg.src     = "img/bg.jpg";
-const playerImg = new Image(); playerImg.src = "img/player.png";
-const pipeImg   = new Image(); pipeImg.src   = "img/pipe.png";
+const bgImg     = new Image(); bgImg.src     = "/img/bg.jpg";
+const playerImg = new Image(); playerImg.src = "/img/player.png";
+const pipeImg   = new Image(); pipeImg.src   = "/img/pipe.png";
 
 const music     = new Audio("audio/music.mp3");
 music.loop      = true;

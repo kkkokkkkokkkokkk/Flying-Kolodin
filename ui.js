@@ -1,6 +1,4 @@
 // ── UI.JS ─────────────────────────────────────
-// Uses same element IDs as the old working version (#app, #balance, etc.)
-
 const app        = document.getElementById("app");
 const canvas     = document.getElementById("gameCanvas");
 const balanceEl  = document.getElementById("balance");
@@ -19,9 +17,10 @@ function updateBalanceDisplay() {
   if (sb) sb.textContent = b;
 }
 
-// ── Init: load from DB then render ────────────
+// ── Init ───────────────────────────────────────
 async function init() {
-  try { await loadMyProfile(); } catch(e) { console.error("Profile:", e); }
+  try   { await loadMyProfile(); }
+  catch (e) { console.error("Profile:", e); }
   updateBalanceDisplay();
   try {
     const top = await loadLeaderboard();
@@ -32,24 +31,21 @@ init();
 
 // ── Play ───────────────────────────────────────
 playBtn.addEventListener("click", () => {
-  app.style.display = "none";
-  bottomNav.style.display = "none";
+  app.style.display           = "none";
+  bottomNav.style.display     = "none";
   gameOverEl.classList.add("hidden");
-
-  canvas.style.display = "block";
-  canvas.style.zIndex = "10";          // 🔥 поднимаем
-  canvas.style.pointerEvents = "auto"; // 🔥 включаем клики
-
+  canvas.style.display        = "block";
+  canvas.style.zIndex         = "10";
+  canvas.style.pointerEvents  = "auto";
   startGame();
 });
 
-// ── Game Over (called by game.js) ─────────────
+// ── Game Over (called from game.js) ───────────
 async function showGameOver(sessionScore) {
-  canvas.style.display = "none";
-  canvas.style.zIndex = "-1";          // 🔥 УБРАТЬ
-  canvas.style.pointerEvents = "none"; // 🔥 отключить клики
-
-  bottomNav.style.display = "flex";
+  canvas.style.display       = "none";
+  canvas.style.zIndex        = "-1";
+  canvas.style.pointerEvents = "none";
+  bottomNav.style.display    = "flex";
   gameOverEl.classList.remove("hidden");
 
   finalScore.textContent = sessionScore;
@@ -91,28 +87,21 @@ function esc(s) {
 // ── Retry ──────────────────────────────────────
 retryBtn.addEventListener("click", () => {
   gameOverEl.classList.add("hidden");
-
-  canvas.style.display = "block";
+  canvas.style.display       = "block";
+  canvas.style.zIndex        = "10";
   canvas.style.pointerEvents = "auto";
-  canvas.style.zIndex = "10";
-
-  bottomNav.style.display = "none";
-
+  bottomNav.style.display    = "none";
   startGame();
 });
 
 // ── Back to menu ───────────────────────────────
 menuBtn.addEventListener("click", () => {
   gameOverEl.classList.add("hidden");
-
-  // выключаем игру
-  canvas.style.display = "none";
+  canvas.style.display       = "none";
+  canvas.style.zIndex        = "-1";
   canvas.style.pointerEvents = "none";
-  canvas.style.zIndex = "-1";
-
-  // включаем UI
-  app.style.display = "flex";
-  bottomNav.style.display = "flex";
-
+  app.style.display          = "flex";
+  bottomNav.style.display    = "flex";
   navTo("home");
+  updateBalanceDisplay();
 });

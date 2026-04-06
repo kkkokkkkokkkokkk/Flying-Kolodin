@@ -1,93 +1,138 @@
 // ══════════════════════════════════════════════
-//  SHOP.JS
+//  SHOP.JS — catalogue, buy, equip, nav
 // ══════════════════════════════════════════════
 
 const CATALOGUE = {
   skins: [
-    { id:"default", name:"Классик",      icon:"🐦", price:0   },
-    { id:"pixel",   name:"Пиксель",      icon:"👾", price:50  },
-    { id:"fire",    name:"Огонь",        icon:"🔥", price:120 },
-    { id:"ghost",   name:"Призрак",      icon:"👻", price:80  },
-    { id:"robot",   name:"Робот",        icon:"🤖", price:150 },
-    { id:"alien",   name:"Инопланетян",  icon:"👽", price:200 },
+    { id:"default", name:"Классик",     icon:"🐦", price:0,   file:null  },
+    { id:"pixel",   name:"Пиксель",     icon:"👾", price:50,  file:"img/player_pixel.png"  },
+    { id:"fire",    name:"Огонь",       icon:"🔥", price:120, file:"img/player_fire.png"   },
+    { id:"ghost",   name:"Призрак",     icon:"👻", price:80,  file:"img/player_ghost.png"  },
+    { id:"robot",   name:"Робот",       icon:"🤖", price:150, file:"img/player_robot.png"  },
+    { id:"alien",   name:"Инопланетян", icon:"👽", price:200, file:"img/player_alien.png"  },
   ],
   music: [
-    { id:"default", name:"Классика",     icon:"🎵", price:0  },
-    { id:"rock",    name:"Рок",          icon:"🎸", price:80 },
-    { id:"lofi",    name:"Lo-Fi",        icon:"🌊", price:60 },
-    { id:"8bit",    name:"8-бит",        icon:"🕹️", price:70 },
+    { id:"default", name:"Классика",    icon:"🎵", price:0,  file:null },
+    { id:"rock",    name:"Рок",         icon:"🎸", price:80, file:"audio/music_rock.mp3"  },
+    { id:"lofi",    name:"Lo-Fi",       icon:"🌊", price:60, file:"audio/music_lofi.mp3"  },
+    { id:"8bit",    name:"8-бит",       icon:"🕹️", price:70, file:"audio/music_8bit.mp3"  },
   ],
   bg: [
-    { id:"default", name:"Оригинал",     icon:"🌅", price:0   },
-    { id:"city",    name:"Город",        icon:"🌆", price:70  },
-    { id:"space",   name:"Космос",       icon:"🌌", price:100 },
-    { id:"forest",  name:"Лес",          icon:"🌲", price:90  },
+    { id:"default", name:"Оригинал",    icon:"🌅", price:0,   file:null },
+    { id:"city",    name:"Город",       icon:"🌆", price:70,  file:"img/bg_city.jpg"   },
+    { id:"space",   name:"Космос",      icon:"🌌", price:100, file:"img/bg_space.jpg"  },
+    { id:"forest",  name:"Лес",         icon:"🌲", price:90,  file:"img/bg_forest.jpg" },
   ],
   pipes: [
-    { id:"default", name:"Зелёные",      icon:"🟩", price:0   },
-    { id:"stone",   name:"Камень",       icon:"🪨", price:90  },
-    { id:"neon",    name:"Неон",         icon:"⚡", price:150 },
-    { id:"gold",    name:"Золото",       icon:"🏆", price:200 },
+    { id:"default", name:"Зелёные",     icon:"🟩", price:0,   file:null },
+    { id:"stone",   name:"Камень",      icon:"🪨", price:90,  file:"img/pipe_stone.png" },
+    { id:"neon",    name:"Неон",        icon:"⚡", price:150, file:"img/pipe_neon.png"  },
+    { id:"gold",    name:"Золото",      icon:"🏆", price:200, file:"img/pipe_gold.png"  },
   ],
 };
 
-// State
+// Default file paths (fallback when equipped = "default")
+const DEFAULTS = {
+  skin:  "img/player.png",
+  music: "audio/music.mp3",
+  bg:    "img/bg.jpg",
+  pipes: "img/pipe.png",
+};
+
+// ── State (kept in sync with localStorage) ────
 let owned    = { skins:new Set(["default"]), music:new Set(["default"]), bg:new Set(["default"]), pipes:new Set(["default"]) };
 let equipped = { skin:"default", music:"default", bg:"default", pipes:"default" };
 
 function _loadState() {
   try {
     const o = JSON.parse(localStorage.getItem("owned_items") || "{}");
-    for (const c of ["skins","music","bg","pipes"]) owned[c] = new Set(o[c] || ["default"]);
+    for (const c of ["skins","music","bg","pipes"]) {
+      owned[c] = new Set(Array.isArray(o[c]) ? o[c] : ["default"]);
+    }
+  } catch(_) {}
+  try {
     const e = JSON.parse(localStorage.getItem("equipped") || "{}");
-    equipped = { skin:e.skin||"default", music:e.music||"default", bg:e.bg||"default", pipes:e.pipes||"default" };
+    equipped = {
+      skin:  e.skin  || "default",
+      music: e.music || "default",
+      bg:    e.bg    || "default",
+      pipes: e.pipes || "default",
+    };
   } catch(_) {}
 }
+
 function _saveState() {
   const o = {};
   for (const c of ["skins","music","bg","pipes"]) o[c] = [...owned[c]];
   localStorage.setItem("owned_items", JSON.stringify(o));
-  localStorage.setItem("equipped", JSON.stringify(equipped));
+  localStorage.setItem("equipped",    JSON.stringify(equipped));
+  // fire-and-forget DB sync
+  if (typeof syncShopOnly === "function") syncShopOnly().catch(console.error);
 }
+
 _loadState();
 
-// Public getter for game.js
+// ── Public getters used by game.js ─────────────
 function getEquipped() { return equipped; }
 
-// ── Nav between home / shop ────────────────────
+function getAssetPath(category, id) {
+  // category: "skin" | "music" | "bg" | "pipes"
+  // maps to CATALOGUE key
+  const catMap = { skin:"skins", music:"music", bg:"bg", pipes:"pipes" };
+  const cat    = catMap[category];
+  if (!cat) return DEFAULTS[category];
+  if (id === "default") return DEFAULTS[category];
+  const item = CATALOGUE[cat].find(i => i.id === id);
+  return (item && item.file) ? item.file : DEFAULTS[category];
+}
+
+// ── Navigation ─────────────────────────────────
 function navTo(name) {
-  const appEl    = document.getElementById("app");
-  const shopEl   = document.getElementById("shop-screen");
-  const navHome  = document.getElementById("nav-home");
-  const navShop  = document.getElementById("nav-shop");
+  const appEl   = document.getElementById("app");
+  const shopEl  = document.getElementById("shop-screen");
+  const navHome = document.getElementById("nav-home");
+  const navShop = document.getElementById("nav-shop");
 
   if (name === "home") {
-    appEl.style.display  = "flex";
+    appEl.style.display = "flex";
     shopEl.classList.add("screen-hidden");
     navHome.classList.add("active");
     navShop.classList.remove("active");
   } else {
-    appEl.style.display  = "none";
+    appEl.style.display = "none";
     shopEl.classList.remove("screen-hidden");
     navHome.classList.remove("active");
     navShop.classList.add("active");
-    // sync balance pill
-    const sb = document.getElementById("shop-balance");
-    if (sb) sb.textContent = localStorage.getItem("balance") || "0";
-    renderShop();
+    _syncShopBalancePill();
+    // always re-render when opening
+    switchInnerTab("shop");
   }
+}
+
+function _syncShopBalancePill() {
+  const el = document.getElementById("shop-balance");
+  if (el) el.textContent = localStorage.getItem("balance") || "0";
 }
 
 // ── Inner tab ──────────────────────────────────
 function switchInnerTab(tab) {
-  document.getElementById("itab-shop").classList.toggle("active", tab === "shop");
-  document.getElementById("itab-account").classList.toggle("active", tab === "account");
-  document.getElementById("ipanel-shop").classList.toggle("panel-hidden", tab !== "shop");
-  document.getElementById("ipanel-account").classList.toggle("panel-hidden", tab !== "account");
+  const tabShop = document.getElementById("itab-shop");
+  const tabAcc  = document.getElementById("itab-account");
+  const panShop = document.getElementById("ipanel-shop");
+  const panAcc  = document.getElementById("ipanel-account");
+
+  if (!tabShop || !panShop) return;
+
+  tabShop.classList.toggle("active",  tab === "shop");
+  tabAcc.classList.toggle("active",   tab === "account");
+  panShop.classList.toggle("panel-hidden",   tab !== "shop");
+  panAcc.classList.toggle("panel-hidden",    tab !== "account");
+
+  if (tab === "shop")    renderShop();
   if (tab === "account") renderAccount();
 }
 
-// ── Render shop grids ──────────────────────────
+// ── Render helpers ─────────────────────────────
 function _renderGrid(containerId, cat, accountMode) {
   const el = document.getElementById(containerId);
   if (!el) return;
@@ -96,50 +141,45 @@ function _renderGrid(containerId, cat, accountMode) {
   el.innerHTML = CATALOGUE[cat].map(item => {
     const isOwned    = owned[cat].has(item.id);
     const isEquipped = equipped[eqKey] === item.id;
-
     if (accountMode && !isOwned) return "";
 
-    let btnHtml;
-    if (accountMode) {
-      btnHtml = isEquipped
-        ? `<button class="s-btn equipped" disabled>✓ Надето</button>`
-        : `<button class="s-btn equip" onclick="equipItem('${cat}','${item.id}')">Надеть</button>`;
+    let btn;
+    if (isEquipped) {
+      btn = `<button class="s-btn s-equipped" disabled>✓ Надето</button>`;
     } else if (isOwned) {
-      btnHtml = isEquipped
-        ? `<button class="s-btn equipped" disabled>✓ Надето</button>`
-        : `<button class="s-btn equip" onclick="equipItem('${cat}','${item.id}')">Надеть</button>`;
+      btn = `<button class="s-btn s-equip" onclick="equipItem('${cat}','${item.id}')">Надеть</button>`;
     } else {
-      btnHtml = `<button class="s-btn buy" onclick="buyItem('${cat}','${item.id}',${item.price},this)">🪙 ${item.price}</button>`;
+      btn = `<button class="s-btn s-buy" onclick="buyItem('${cat}','${item.id}',${item.price},this)">🪙 ${item.price}</button>`;
     }
 
     return `
-      <div class="s-card ${isEquipped ? 'is-equipped' : ''}">
+      <div class="s-card${isEquipped?' is-equipped':''}">
         ${isEquipped ? '<span class="s-badge">НАДЕТО</span>' : ''}
         <div class="s-icon">${item.icon}</div>
         <div class="s-name">${item.name}</div>
         ${!accountMode && !isOwned ? `<div class="s-price">🪙 ${item.price}</div>` : ''}
-        ${btnHtml}
+        ${btn}
       </div>`;
   }).join("");
 }
 
 function renderShop() {
-  _renderGrid("grid-skins",  "skins",  false);
-  _renderGrid("grid-music",  "music",  false);
-  _renderGrid("grid-bg",     "bg",     false);
-  _renderGrid("grid-pipes",  "pipes",  false);
+  _renderGrid("grid-skins", "skins", false);
+  _renderGrid("grid-music", "music", false);
+  _renderGrid("grid-bg",    "bg",    false);
+  _renderGrid("grid-pipes", "pipes", false);
 }
 
 function renderAccount() {
-  _renderGrid("acc-skins", "skins",  true);
-  _renderGrid("acc-music", "music",  true);
-  _renderGrid("acc-bg",    "bg",     true);
-  _renderGrid("acc-pipes", "pipes",  true);
+  _renderGrid("acc-skins", "skins", true);
+  _renderGrid("acc-music", "music", true);
+  _renderGrid("acc-bg",    "bg",    true);
+  _renderGrid("acc-pipes", "pipes", true);
 
   const name   = localStorage.getItem("username") || "Игрок";
   const avatar = window.Telegram?.WebApp?.initDataUnsafe?.user?.photo_url || null;
   const best   = localStorage.getItem("best_score") || "0";
-  const coins  = localStorage.getItem("balance") || "0";
+  const coins  = localStorage.getItem("balance")    || "0";
 
   const nameEl  = document.getElementById("acc-name");
   const avaEl   = document.getElementById("acc-avatar");
@@ -150,9 +190,11 @@ function renderAccount() {
   if (bestEl)  bestEl.textContent  = best;
   if (coinsEl) coinsEl.textContent = coins;
   if (avaEl) {
-    avaEl.innerHTML = avatar
-      ? `<img src="${avatar}" alt="" onerror="this.parentElement.textContent='${name.charAt(0)}';">`
-      : name.charAt(0).toUpperCase();
+    if (avatar) {
+      avaEl.innerHTML = `<img src="${avatar}" alt="" onerror="this.parentElement.textContent='${name.charAt(0)}'">`;
+    } else {
+      avaEl.textContent = name.charAt(0).toUpperCase();
+    }
   }
 }
 
@@ -161,20 +203,22 @@ function buyItem(cat, id, price, btn) {
   const balance = parseInt(localStorage.getItem("balance") || "0");
   if (balance < price) {
     const orig = btn.textContent;
-    btn.className = "s-btn no-coins";
-    btn.textContent = "Мало монет!";
-    setTimeout(() => { btn.className = "s-btn buy"; btn.textContent = orig; }, 1400);
+    btn.className    = "s-btn s-no-coins";
+    btn.textContent  = "Мало монет!";
+    setTimeout(() => { btn.className = "s-btn s-buy"; btn.textContent = orig; }, 1400);
     return;
   }
   const newBal = balance - price;
   localStorage.setItem("balance", newBal);
   owned[cat].add(id);
   _saveState();
-  // update all balance displays
-  const mainBal = document.getElementById("balance");
-  const shopBal = document.getElementById("shop-balance");
-  if (mainBal) mainBal.textContent = newBal;
-  if (shopBal) shopBal.textContent = newBal;
+
+  // update balance displays everywhere
+  const mainEl = document.getElementById("balance");
+  const shopEl = document.getElementById("shop-balance");
+  if (mainEl) mainEl.textContent = newBal;
+  if (shopEl) shopEl.textContent = newBal;
+
   renderShop();
 }
 
@@ -183,6 +227,10 @@ function equipItem(cat, id) {
   const eqKey = cat === "skins" ? "skin" : cat;
   equipped[eqKey] = id;
   _saveState();
+
+  // Reload assets in running game if possible
+  if (typeof reloadGameAssets === "function") reloadGameAssets();
+
   renderShop();
   const accPanel = document.getElementById("ipanel-account");
   if (accPanel && !accPanel.classList.contains("panel-hidden")) renderAccount();

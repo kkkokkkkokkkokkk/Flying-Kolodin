@@ -4,7 +4,7 @@ from telegram.error import TelegramError
 
 TOKEN = '8632388056:AAFltKzfIfNA3YoGpF26Sf4PTAaH6EzmuRs'
 USER_IDS = [7460546102, 7258895996, 7731489232, 1237015816, 5119205195] # Replace with your list of IDs
-MESSAGE = "Игра про Колодина временно работает некорректно, мы уже работаем над исправлением. Спасибо за понимание! Ожидайте обновлений."
+MESSAGE = "Основная игра исправлена, гредет крупное обновление с магазином! - Kolodin Game Corporation ©2026"
 
 async def broadcast_message():
     bot = Bot(token=TOKEN)
